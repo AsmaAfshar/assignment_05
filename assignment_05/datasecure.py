@@ -25,7 +25,13 @@ if "lockout_time" not in st.session_state:
     st.session_state.lockout_time = 0
     
 # === if data is load  ====
-def load_data(data):
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data,f)
         
@@ -96,14 +102,15 @@ elif choice == "Register":
                 st.session_state.authenticated_user = username
                 st.session_state.failed_attempts = 0
                 st.success(f"✅ Welcome {username}!")
-            else:st.session_state.failed_attempts += 1
-            remaining = 3 - st.session_state.failed_attempts
-            st.error(f" ❌ Invalid Credentials! Attempts left: {remaining}")
+            else:
+                st.session_state.failed_attempts += 1
+                remaining = 3 - st.session_state.failed_attempts
+                st.error(f" ❌ Invalid Credentials! Attempts left: {remaining}")
             
-            if st.session_state.failed_attempts >= 3:
-                st.session_state.lockout_time = time.time() + LOCKOUT_DURATION
-                st.error("🛑 To many failed attempts. Locked for 60 seconds")
-                st.stop()
+                if st.session_state.failed_attempts >= 3:
+                    st.session_state.lockout_time = time.time() + LOCKOUT_DURATION
+                    st.error("🛑 To many failed attempts. Locked for 60 seconds")
+                    st.stop()
                 
             
 # ==== data store section ====
@@ -132,7 +139,7 @@ elif choice == "Retrieve Data":
         st.warning("⚠️ Please login first")
     else:
         st.subheader(" 🔍 Retrieve data")
-        user_data = stored_data.get(st.session_state.uthenticated_user, {}).get("data", [])
+        user_data = stored_data.get(st.session_state.authenticated_user, {}).get("data", [])
         
         if not user_data:
             st.info("Data Not Found!")
