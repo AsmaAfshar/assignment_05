@@ -86,8 +86,8 @@ elif choice == "Register":
                 st.success(" ✅ User register successfully!")
         else:
             st.error("Both fields are required.")
-    elif choice == "Login":
-        st.subheader(" 🔑 user login")      
+elif choice == "Login":
+     st.subheader(" 🔑 user login")      
         
         if time.time() < st.session_state.lockout_time:
             remaining = int(st.session_state.lockout_time - time.time())    
