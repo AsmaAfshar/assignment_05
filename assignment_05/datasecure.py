@@ -25,7 +25,7 @@ if "lockout_time" not in st.session_state:
     st.session_state.lockout_time = 0
     
 # === if data is load  ====
-def save_data(data):
+def load_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data,f)
         
